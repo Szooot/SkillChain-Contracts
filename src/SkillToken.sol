@@ -90,7 +90,8 @@ contract SkillToken is ERC721, Ownable {
         s_skillToUserToApproverStatus[_skillId][_userToApprove][msg.sender] = true;
     }
 
-    /**,o
+    /**
+     * ,o
      * @dev Overrides the transferFrom & approve functions to prevent transfers and approvals - Soulbound Logic
      */
     function transferFrom(address, /*from*/ address to, uint256 /*tokenId*/ ) public pure override {
