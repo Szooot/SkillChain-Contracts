@@ -8,6 +8,6 @@ contract SkillTokenTest is Test {
     SkillToken public skillToken;
 
     function setUp() public {
-        skillToken = new SkillToken(msg.sender);
+        skillToken = new SkillToken();
     }
 }

@@ -36,7 +36,7 @@ contract SkillToken is ERC721, Ownable {
 
     /* Functions */
 
-    constructor(address owner) ERC721("SkillToken", "SKT") Ownable(owner) {}
+    constructor() ERC721("SkillToken", "SKT") Ownable(msg.sender) {}
 
     /**
      * @notice Only the owner can add or update skills
@@ -47,11 +47,25 @@ contract SkillToken is ERC721, Ownable {
         s_skillToImage[_skillId] = _ipfsHash;
     }
 
+    function addSkillsBatch(uint256[] memory skillIds, string[] memory ipfsHashes) public onlyOwner {
+        require(skillIds.length == ipfsHashes.length, "Input arrays must match");
+        for (uint256 i = 0; i < skillIds.length; i++) {
+            s_skillToImage[skillIds[i]] = ipfsHashes[i];
+        }
+    }
+
+    /**
+     * @notice Returns the base URI for the token metadata
+     */
+    function _baseURI() internal pure override returns (string memory) {
+        return "https://lavender-blank-primate-819.mypinata.cloud/ipfs/";
+    }
+
     function tokenURI(uint256 _tokenId) public view override returns (string memory) {
         require(s_tokenToApprover[_tokenId] != address(0), "Token does not exist");
         uint256 skillId = s_tokenToSkill[_tokenId];
         string memory imageIPFS = s_skillToImage[skillId];
-        return string(abi.encodePacked("https://lavender-blank-primate-819.mypinata.cloud/ipfs/", imageIPFS));
+        return string(abi.encodePacked(_baseURI(), imageIPFS));
     }
 
     /**
@@ -61,38 +75,41 @@ contract SkillToken is ERC721, Ownable {
      */
     function mintSkill(address _userToApprove, uint256 _skillId) public {
         require(_userToApprove != msg.sender, "Cannot approve self");
+        require(_userToApprove != address(0), "Cannot approve zero address");
         require(bytes(s_skillToImage[_skillId]).length > 0, "Skill does not exist");
         require(
             s_skillToUserToApproverStatus[_skillId][_userToApprove][msg.sender] == false,
             "Already approved by this approver"
         );
 
-        uint256 tokenId = s_nextTokenId++;
+        uint256 tokenId = ++s_nextTokenId;
         _safeMint(_userToApprove, tokenId);
-        
 
         s_tokenToSkill[tokenId] = _skillId;
         s_tokenToApprover[tokenId] = msg.sender;
         s_skillToUserToApproverStatus[_skillId][_userToApprove][msg.sender] = true;
     }
 
-    /**
+    /**,o
      * @dev Overrides the transferFrom & approve functions to prevent transfers and approvals - Soulbound Logic
      */
-    function transferFrom(address /*from*/, address /*to*/, uint256 /*tokenId*/) public pure override {
-        revert("SkillToken is soulbound and cannot be transferred");
-        //if (to != address(0)) revert("Use transferToken");
+    function transferFrom(address, /*from*/ address to, uint256 /*tokenId*/ ) public pure override {
+        if (to != address(0)) revert("SkillToken is soulbound and cannot be transferred");
     }
 
-    function safeTransferFrom(address /*from*/, address /*to*/, uint256 /*tokenId*/, bytes memory /*data*/) public pure override {
+    function safeTransferFrom(address, /*from*/ address, /*to*/ uint256, /*tokenId*/ bytes memory /*data*/ )
+        public
+        pure
+        override
+    {
         revert("SkillToken is soulbound and cannot be transferred");
     }
 
-    function approve(address /*to*/, uint256 /*tokenId*/) public pure override {
+    function approve(address, /*to*/ uint256 /*tokenId*/ ) public pure override {
         revert("SkillToken is soulbound and cannot be approved");
     }
 
-    function setApprovalForAll(address /*operator*/, bool /*approved*/) public pure override {
+    function setApprovalForAll(address, /*operator*/ bool /*approved*/ ) public pure override {
         revert("SkillToken is soulbound and cannot be approved");
     }
 }
