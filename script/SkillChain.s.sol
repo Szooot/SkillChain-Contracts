@@ -1,12 +1,24 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-import {Script, console} from "forge-std/Script.sol";
+import {Script} from "../lib/forge-std/src/Script.sol";
 import {SkillToken} from "../src/SkillToken.sol";
 
-contract SkillScript is Script {
+/**
+ * @title SkillTokenScript
+ * @author Neti's Intern Team
+ * @notice Script to deploy the SkillToken contract and add a batch of skills.
+ */
+contract SkillTokenScript is Script {
+
+    /**
+     * @notice Instance of the SkillToken contract.
+     */
     SkillToken public skillToken;
 
+    /**
+     * @notice Deploys the SkillToken contract and adds a batch of skills.
+     */
     function run() public {
         vm.startBroadcast();
 
@@ -23,14 +35,14 @@ contract SkillScript is Script {
         skillIds[7] = 8;
 
         string[] memory ipfsHashes = new string[](8);
-        ipfsHashes[0] = "bafkreigjdeizt5aeteqmf7azannyuzte6n7uncp43huegttymcl6pcdd6a";
-        ipfsHashes[1] = "bafkreicyew3etsgajxwbh3hqduayeqa32dwhc6e5f6qgejegnweczukrl4";
-        ipfsHashes[2] = "bafkreihsecsdmjmo2akmkev2j6oa3zvz4xbmjnktggqkfh4mpinbfq3eim";
-        ipfsHashes[3] = "bafkreidkmreyzvyzwasoxcqeflbef2hkrgyw2oztta6tag3w36bsvkr3ym";
-        ipfsHashes[4] = "bafkreiagk37wl7eo5lg2lr4np6p75epmd24rtw3e6vxaw7oniyfpjo6tnq";
-        ipfsHashes[5] = "bafkreibnivmls3j6y4oq3erkmjtizmxkljoyh3l5jsxwwbdzwmtg66k2f4";
-        ipfsHashes[6] = "bafkreib73ayou2kdd3l2bogqndgvwnfnh4akdj4bsxkq6e77kzyt6jdc4e";
-        ipfsHashes[7] = "bafkreid7ha5p6gmusg74jvc3upkpasdm2hwogbzbnlhbtpzalkdyhlti7u";
+        ipfsHashes[0] = "bafkreie5pyvzuw4aglajyaodavkijvkojlcnakxjwh7cab3svc2b62tivq";
+        ipfsHashes[1] = "bafkreia7xavfaxfezptn6g6obgszmzkeixq5afoymyodylrojsqqjdz5pu";
+        ipfsHashes[2] = "bafkreidvgdbnynljohj36v4cnuqfxjsc4bzevnqh6emvxsuvei64pureeu";
+        ipfsHashes[3] = "bafkreiaz4svlgmh5m4rwduvqxwkmyrcsrhia3gl7mkpn2abo4blrjdugya";
+        ipfsHashes[4] = "bafkreiazodxcgrqzjpnbeuxj7tm3y4pu6udfkpcau3gk6tb4pa5qmhggqe";
+        ipfsHashes[5] = "bafkreidjtqs4pfzoaozlpla6xon4hjkas436sejjtj6z5dehjingaanzoi";
+        ipfsHashes[6] = "bafkreiaq4qfgfr43rhkiien7jp4imgquj2sp2futz6t6jtnqccspz23clm";
+        ipfsHashes[7] = "bafkreibiutwsgvkcod5eoktpuf37julklu4st4shddy2rsnopp47lxoe5e";
 
         skillToken.addSkillsBatch(skillIds, ipfsHashes);
 
