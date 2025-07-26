@@ -69,7 +69,7 @@ contract SkillToken is ERC721, Ownable {
      * @param ipfsHashes The IPFS hashes of the skills' images
      */
     function addSkillsBatch(uint256[] memory skillIds, string[] memory ipfsHashes) public onlyOwner {
-        if (skillIds.length == ipfsHashes.length) {
+        if (skillIds.length != ipfsHashes.length) {
             revert InputArraysLengthMismatch(skillIds.length, ipfsHashes.length);
         }
         for (uint256 i = 0; i < skillIds.length; ++i) {
@@ -87,7 +87,7 @@ contract SkillToken is ERC721, Ownable {
 
     /**
      * @notice Returns the base URI for the token metadata
-     * @return The base URI as a string
+     * @return URI as a string
      */
     function _baseURI() internal view override returns (string memory) {
         return _baseUri;
@@ -96,10 +96,10 @@ contract SkillToken is ERC721, Ownable {
     /**
      * @notice The tokenURI for a given token ID
      * @param tokenId The ID of the token to get the URI for
-     * @return The URI string for the token metadata
+     * @return URI string for the token metadata
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        if (tokenToApprover[tokenId] != address(0)) {
+        if (tokenToApprover[tokenId] == address(0)) {
             revert TokenDoesNotExist(tokenId);
         }
         uint256 skillId = tokenToSkill[tokenId];
@@ -113,16 +113,16 @@ contract SkillToken is ERC721, Ownable {
      * @param skillId The ID of the skill to mint
      */
     function mintSkill(address userToApprove, uint256 skillId) public {
-        if (userToApprove != msg.sender) {
+        if (userToApprove == msg.sender) {
             revert CannotApproveSelf();
         }
-        if (userToApprove != address(0)) {
+        if (userToApprove == address(0)) {
             revert CannotApproveZeroAddress();
         }
-        if (bytes(skillToImage[skillId]).length > 0) {
+        if (bytes(skillToImage[skillId]).length == 0) {
             revert SkillDoesNotExist(skillId);
         }
-        if (skillToUserToApproverStatus[skillId][userToApprove][msg.sender] == false) {
+        if (skillToUserToApproverStatus[skillId][userToApprove][msg.sender] == true) {
             revert AlreadyApprovedByApprover();
         }
 
