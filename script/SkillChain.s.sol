@@ -10,7 +10,6 @@ import {SkillToken} from "../src/SkillToken.sol";
  * @notice Script to deploy the SkillToken contract and add a batch of skills.
  */
 contract SkillTokenScript is Script {
-
     /**
      * @notice Instance of the SkillToken contract.
      */

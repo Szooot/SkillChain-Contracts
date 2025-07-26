@@ -9,9 +9,7 @@ import {SkillToken} from "../src/SkillToken.sol";
  * @author Neti's Intern Team
  * @notice This contract contains tests for the SkillToken contract.
  */
-
 contract SkillTokenTest is Test {
-
     /**
      * @notice Instance of the SkillToken contract.
      */

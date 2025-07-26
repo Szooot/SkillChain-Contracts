@@ -22,6 +22,7 @@
     "gas-custom-errors": "error",
     "gas-struct-packing": "warn",
     "gas-calldata-parameters": "warn",
+    "gas-small-strings": "off",
     "func-name-mixedcase": "error",
     "func-visibility": [
       "warn",

@@ -10,6 +10,16 @@ import {Ownable} from "../lib/openzeppelin-contracts/contracts/access/Ownable.so
  * @notice A simple ERC721 token with SBT implementation representing skills.
  */
 contract SkillToken is ERC721, Ownable {
+    /* Errors */
+    error InputArraysLengthMismatch(uint256 skillIdsLength, uint256 ipfsHashesLength);
+    error TokenDoesNotExist(uint256 tokenId);
+    error SkillDoesNotExist(uint256 skillId);
+    error CannotApproveSelf();
+    error CannotApproveZeroAddress();
+    error AlreadyApprovedByApprover();
+    error CannotBeTransferred();
+    error CannotBeApproved();
+
     /* State Variables */
 
     uint256 private _nextTokenId;
@@ -34,7 +44,8 @@ contract SkillToken is ERC721, Ownable {
      * @dev Maps skill IDs to user addresses to approver addresses to approval status
      * @notice Does Approver approve the skill for the user?
      */
-    mapping(uint256 skillId => mapping(address user => mapping(address approver => bool))) public skillToUserToApproverStatus;
+    mapping(uint256 skillId => mapping(address user => mapping(address approver => bool))) public
+        skillToUserToApproverStatus;
 
     /* Functions */
 
@@ -58,7 +69,9 @@ contract SkillToken is ERC721, Ownable {
      * @param ipfsHashes The IPFS hashes of the skills' images
      */
     function addSkillsBatch(uint256[] memory skillIds, string[] memory ipfsHashes) public onlyOwner {
-        require(skillIds.length == ipfsHashes.length, "Input arrays must match");
+        if (skillIds.length == ipfsHashes.length) {
+            revert InputArraysLengthMismatch(skillIds.length, ipfsHashes.length);
+        }
         for (uint256 i = 0; i < skillIds.length; ++i) {
             skillToImage[skillIds[i]] = ipfsHashes[i];
         }
@@ -86,7 +99,9 @@ contract SkillToken is ERC721, Ownable {
      * @return The URI string for the token metadata
      */
     function tokenURI(uint256 tokenId) public view override returns (string memory) {
-        require(tokenToApprover[tokenId] != address(0), "Token does not exist");
+        if (tokenToApprover[tokenId] != address(0)) {
+            revert TokenDoesNotExist(tokenId);
+        }
         uint256 skillId = tokenToSkill[tokenId];
         string memory imageIPFS = skillToImage[skillId];
         return string(abi.encodePacked(_baseURI(), imageIPFS));
@@ -98,13 +113,18 @@ contract SkillToken is ERC721, Ownable {
      * @param skillId The ID of the skill to mint
      */
     function mintSkill(address userToApprove, uint256 skillId) public {
-        require(userToApprove != msg.sender, "Cannot approve self");
-        require(userToApprove != address(0), "Cannot approve zero address");
-        require(bytes(skillToImage[skillId]).length > 0, "Skill does not exist");
-        require(
-            skillToUserToApproverStatus[skillId][userToApprove][msg.sender] == false,
-            "Already approved by approver"
-        );
+        if (userToApprove != msg.sender) {
+            revert CannotApproveSelf();
+        }
+        if (userToApprove != address(0)) {
+            revert CannotApproveZeroAddress();
+        }
+        if (bytes(skillToImage[skillId]).length > 0) {
+            revert SkillDoesNotExist(skillId);
+        }
+        if (skillToUserToApproverStatus[skillId][userToApprove][msg.sender] == false) {
+            revert AlreadyApprovedByApprover();
+        }
 
         uint256 tokenId = ++_nextTokenId;
         _safeMint(userToApprove, tokenId);
@@ -114,11 +134,12 @@ contract SkillToken is ERC721, Ownable {
         skillToUserToApproverStatus[skillId][userToApprove][msg.sender] = true;
     }
 
+    /* solhint-disable use-natspec */
     /**
      * @notice Override the transferFrom function to prevent transfers (SBT behavior)
      */
     function transferFrom(address, /*from*/ address, /*to*/ uint256 /*tokenId*/ ) public pure override {
-        revert("SkillToken cannot be transferred");
+        revert CannotBeTransferred();
     }
 
     /**
@@ -129,21 +150,21 @@ contract SkillToken is ERC721, Ownable {
         pure
         override
     {
-        revert("SkillToken cannot be transferred");
+        revert CannotBeTransferred();
     }
 
     /**
      * @notice Override the approve function to prevent approvals (SBT behavior)
      */
     function approve(address, /*to*/ uint256 /*tokenId*/ ) public pure override {
-        revert("SkillToken cannot be approved");
+        revert CannotBeApproved();
     }
 
     /**
      * @notice Override the setApprovalForAll function to prevent approvals (SBT behavior)
-     * 
      */
     function setApprovalForAll(address, /*operator*/ bool /*approved*/ ) public pure override {
-        revert("SkillToken cannot be approved");
+        revert CannotBeApproved();
     }
+    /* solhint-enable use-natspec */
 }
