@@ -47,6 +47,16 @@ contract SkillToken is ERC721, Ownable {
     mapping(uint256 skillId => mapping(address user => mapping(address approver => bool))) public
         skillToUserToApproverStatus;
 
+    /* Events */
+
+    /**
+     * @notice Emitted when a skill is minted
+     * @param from The address of the approver
+     * @param to The address of the user receiving the skill
+     * @param skillId The ID of the skill being minted
+     */
+    event TokenMinted(address indexed from, address indexed to, uint256 indexed skillId);
+
     /* Functions */
 
     /**
@@ -128,6 +138,8 @@ contract SkillToken is ERC721, Ownable {
 
         uint256 tokenId = ++_nextTokenId;
         _safeMint(userToApprove, tokenId);
+
+        emit TokenMinted(msg.sender, userToApprove, skillId);
 
         tokenToSkill[tokenId] = skillId;
         tokenToApprover[tokenId] = msg.sender;

@@ -67,6 +67,9 @@ contract SkillTokenTest is Test {
         skillToken.setApprovalForAll(recipient, true);
     }
 
+    /**
+     * @notice Test for adding or updating a skill.
+     */
     function testMintSkill() public {
         skillToken.mintSkill(recipient, 1);
         assertEq(skillToken.tokenToSkill(1), 1);
