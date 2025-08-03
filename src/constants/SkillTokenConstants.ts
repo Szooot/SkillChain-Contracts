@@ -1,4 +1,4 @@
-const CONTRACT_ADDRESS = "0xCBC04702a1a0F118A7E2E7774cA17928e08011B7";
+const CONTRACT_ADDRESS = "0x39D31d1Fa395c1Ce96454B4F93011a7656824692";
 
 const CONTRACT_ABI = [
   { type: "constructor", inputs: [], stateMutability: "nonpayable" },
@@ -278,6 +278,31 @@ const CONTRACT_ABI = [
         type: "address",
         indexed: true,
         internalType: "address",
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: "event",
+    name: "TokenMinted",
+    inputs: [
+      {
+        name: "from",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "to",
+        type: "address",
+        indexed: true,
+        internalType: "address",
+      },
+      {
+        name: "skillId",
+        type: "uint256",
+        indexed: true,
+        internalType: "uint256",
       },
     ],
     anonymous: false,
