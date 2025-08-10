@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "solhint": "^6.0.0"
+  },
+  "scripts": {
+    "lint": "solhint 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol'"
+  }
+}
+ 
